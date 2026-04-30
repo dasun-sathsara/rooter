@@ -5,7 +5,7 @@ This repo bootstraps a fresh Ubuntu 24.04 server for a small personal fleet. It 
 ## Quick Start
 
 ```bash
-git clone <this-repo> rooter
+git clone https://gitlab.com/dasun-sathsara/rooter.git rooter
 cd rooter
 sudo bash bootstrap.sh --github-user dasun
 # or:
@@ -30,7 +30,7 @@ ssh root@SERVER_IP
 # or: ssh ubuntu@SERVER_IP
 sudo apt-get update
 sudo apt-get install -y git
-git clone <this-repo> rooter
+git clone https://gitlab.com/dasun-sathsara/rooter.git rooter
 cd rooter
 sudo bash bootstrap.sh --profile minimal --github-user dasun
 # or paste a public key directly:
