@@ -1,0 +1,7 @@
+[user]
+	name = Dasun Sathsara
+	email = x@dasunsathsara.com
+[credential]
+	helper = store
+[core]
+	editor = nvim
