@@ -1,12 +1,12 @@
-# Personal Ubuntu Server Setup
+# rooter
 
 This repo bootstraps a fresh Ubuntu 24.04 server for a small personal fleet. It interactively creates a passwordless sudo user, hardens SSH, installs a CLI/dev stack, and applies public dotfiles with GNU stow.
 
 ## Quick Start
 
 ```bash
-git clone <this-repo> server-setup
-cd server-setup
+git clone <this-repo> rooter
+cd rooter
 sudo bash bootstrap.sh --github-user dasun
 # or:
 sudo bash bootstrap.sh --ssh-public-key 'ssh-ed25519 AAAA... dasun@server-bootstrap'
@@ -30,8 +30,8 @@ ssh root@SERVER_IP
 # or: ssh ubuntu@SERVER_IP
 sudo apt-get update
 sudo apt-get install -y git
-git clone <this-repo> server-setup
-cd server-setup
+git clone <this-repo> rooter
+cd rooter
 sudo bash bootstrap.sh --profile minimal --github-user dasun
 # or paste a public key directly:
 sudo bash bootstrap.sh --profile minimal --ssh-public-key 'ssh-ed25519 AAAA... dasun@server-bootstrap'

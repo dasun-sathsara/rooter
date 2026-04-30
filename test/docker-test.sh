@@ -2,7 +2,7 @@
 set -Eeuo pipefail
 
 ROOT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
-IMAGE=server-setup-test:ubuntu-24.04
+IMAGE=rooter-test:ubuntu-24.04
 CONTAINER=
 TEST_KEY="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO2uYnBootstrapSmokeTestOnly000000000000000000000 test@example"
 
@@ -21,7 +21,7 @@ fail() {
 
 build_image() {
   tmp_dir=$(mktemp -d)
-  cp -a "$ROOT_DIR" "$tmp_dir/server-setup"
+  cp -a "$ROOT_DIR" "$tmp_dir/rooter"
   cat >"$tmp_dir/Dockerfile" <<'DOCKERFILE'
 FROM ubuntu:24.04
 ENV DEBIAN_FRONTEND=noninteractive
@@ -29,7 +29,7 @@ RUN apt-get update \
   && apt-get install -y sudo openssh-server ca-certificates curl gnupg git \
   && echo 'root:root' | chpasswd \
   && mkdir -p /run/sshd
-COPY server-setup /opt/server-setup
+COPY rooter /opt/rooter
 DOCKERFILE
   docker build -t "$IMAGE" "$tmp_dir"
   rm -rf "$tmp_dir"
@@ -47,11 +47,11 @@ assert_in_container() {
 
 run_smoke() {
   CONTAINER=$(docker run -d --privileged "$IMAGE" sleep infinity)
-  docker exec "$CONTAINER" bash -lc "printf '%s\n' user ssh-harden cli-tools modern-cli dotfiles >/opt/server-setup/profiles/docker-smoke.txt"
+  docker exec "$CONTAINER" bash -lc "printf '%s\n' user ssh-harden cli-tools modern-cli dotfiles >/opt/rooter/profiles/docker-smoke.txt"
   docker exec \
     -e BOOTSTRAP_SMOKE_TEST=1 \
     "$CONTAINER" \
-    bash /opt/server-setup/bootstrap.sh \
+    bash /opt/rooter/bootstrap.sh \
     --profile docker-smoke \
     --non-interactive \
     --user testuser \
