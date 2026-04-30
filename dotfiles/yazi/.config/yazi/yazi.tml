@@ -1,0 +1,64 @@
+[mgr]
+# Panel layout: parent | current | preview
+ratio = [1, 4, 3]
+
+# Sorting
+sort_by       = "natural"   # human-friendly sorting (1 < 2 < 10)
+sort_sensitive = false       # case-insensitive
+sort_reverse   = false
+sort_dir_first = true        # show directories before files
+sort_translit  = true        # handle accented chars
+
+# Display
+linemode    = "size"        # show file size inline
+show_hidden = true          # show dotfiles
+show_symlink = true         # show symlink target
+scrolloff   = 5             # keep context lines above/below cursor
+title_format = "{cwd}"      # show current dir in terminal title
+
+[preview]
+wrap        = "yes"         # wrap long text lines
+tab_size    = 4
+max_width   = 1920
+max_height  = 1080
+image_filter = "catmull-rom" # balance speed/quality
+image_quality = 80          # decent quality without bloating cache
+
+[opener]
+# Open video/audio with mpv
+play = [
+  { run = 'mpv "$@"', orphan = true, for = "unix" },
+  { run = '"C:\\Program Files\\mpv\\mpv.exe" %*', orphan = true, for = "windows" }
+]
+
+# Edit text/code
+edit = [
+  { run = '$EDITOR "$@"', block = true, for = "unix" },
+  { run = "%EDITOR% %*",  block = true, for = "windows" }
+]
+
+# Open with system default
+open = [
+  { run = 'xdg-open "$@"', desc = "Open", for = "unix" },
+  { run = 'start "" %*',   desc = "Open", for = "windows" }
+]
+
+[open]
+# Custom rules
+rules = [
+  { mime = "text/*", use = "edit" },
+  { mime = "video/*", use = "play" },
+  { mime = "audio/*", use = "play" },
+  { name = "*.json", use = "edit" },
+  { name = "*", use = "open" }
+]
+
+[tasks]
+micro_workers = 8
+macro_workers = 4
+bizarre_retry = 2
+suppress_preload = false
+
+[input]
+cursor_blink = true
+
