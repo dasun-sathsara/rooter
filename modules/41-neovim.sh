@@ -1,51 +1,22 @@
-# Installs Neovim, preferring the stable PPA with a fallback to the
-# official pre-built tarball from GitHub releases.
-# Idempotent: PPA install is safe on re-run; tarball overwrites cleanly.
+# Installs Neovim from official pre-built GitHub release tarballs.
+# Overwrites existing installations cleanly in /usr/local.
 
 module_id() { echo "neovim"; }
 module_label() { echo "Install Neovim"; }
 module_default() { echo "on"; }
 module_run() {
   set -Eeuo pipefail
-
-  install_ppa() {
-    local codename
-    . /etc/os-release
-    codename=${VERSION_CODENAME:-$UBUNTU_CODENAME}
-    [[ -n $codename ]] || { warn "Could not determine Ubuntu codename."; return 1; }
-    # Check if the PPA has a Release file for this codename before adding it
-    if ! curl -fsIL "https://ppa.launchpadcontent.net/neovim-ppa/stable/ubuntu/dists/${codename}/Release" >/dev/null 2>&1; then
-      # Clean up any broken PPA list that might have been added by previous runs
-      rm -f /etc/apt/sources.list.d/neovim-ppa-*.list
-      return 1
-    fi
-    apt_install software-properties-common
-    add-apt-repository -y ppa:neovim-ppa/stable
-    apt-get update
-    if apt-cache policy neovim 2>/dev/null | grep -q 'neovim-ppa'; then
-      apt_install neovim
-      return 0
-    fi
-    return 1
-  }
-
-  install_github_tarball() {
-    local arch url tmp_dir
-    case $(dpkg --print-architecture) in
-      amd64) arch=x86_64 ;;
-      arm64) arch=arm64 ;;
-      *) die "Unsupported neovim architecture: $(dpkg --print-architecture)" ;;
-    esac
-    url="https://github.com/neovim/neovim/releases/latest/download/nvim-linux-${arch}.tar.gz"
-    tmp_dir=$(mktemp -d)
-    curl -fsSL "$url" | tar -xz -C "$tmp_dir" || { warn "Failed to download neovim tarball."; rm -rf "$tmp_dir"; return 1; }
-    cp -r "$tmp_dir"/nvim-linux-*/bin "$tmp_dir"/nvim-linux-*/lib "$tmp_dir"/nvim-linux-*/share /usr/local/
-    rm -rf "$tmp_dir"
-  }
-
-  if install_ppa; then
-    return 0
-  fi
-  warn "Neovim PPA unavailable; falling back to GitHub release tarball"
-  install_github_tarball || warn "Failed to install neovim from GitHub release"
+  local arch url tmp_dir
+  case $(dpkg --print-architecture) in
+    amd64) arch=x86_64 ;;
+    arm64) arch=arm64 ;;
+    *) die "Unsupported neovim architecture: $(dpkg --print-architecture)" ;;
+  esac
+  
+  url="https://github.com/neovim/neovim/releases/latest/download/nvim-linux-${arch}.tar.gz"
+  tmp_dir=$(mktemp -d)
+  
+  curl -fsSL "$url" | tar -xz -C "$tmp_dir"
+  cp -r "$tmp_dir"/nvim-linux-*/bin "$tmp_dir"/nvim-linux-*/lib "$tmp_dir"/nvim-linux-*/share /usr/local/
+  rm -rf "$tmp_dir"
 }
