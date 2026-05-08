@@ -12,7 +12,11 @@ module_run() {
     apt_install software-properties-common
     add-apt-repository -y ppa:neovim-ppa/stable
     apt-get update
-    apt_install neovim
+    if apt-cache policy neovim 2>/dev/null | grep -q 'neovim-ppa'; then
+      apt_install neovim
+      return 0
+    fi
+    return 1
   }
 
   install_github_tarball() {
