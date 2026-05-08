@@ -10,12 +10,9 @@ module_run() {
 
   install_ppa() {
     apt_install software-properties-common
-    if add-apt-repository -y ppa:neovim-ppa/stable; then
-      apt-get update
-      apt_install neovim
-      return 0
-    fi
-    return 1
+    add-apt-repository -y ppa:neovim-ppa/stable
+    apt-get update
+    apt_install neovim
   }
 
   install_github_tarball() {
