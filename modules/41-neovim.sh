@@ -15,6 +15,8 @@ module_run() {
     [[ -n $codename ]] || { warn "Could not determine Ubuntu codename."; return 1; }
     # Check if the PPA has a Release file for this codename before adding it
     if ! curl -fsIL "https://ppa.launchpadcontent.net/neovim-ppa/stable/ubuntu/dists/${codename}/Release" >/dev/null 2>&1; then
+      # Clean up any broken PPA list that might have been added by previous runs
+      rm -f /etc/apt/sources.list.d/neovim-ppa-*.list
       return 1
     fi
     apt_install software-properties-common
