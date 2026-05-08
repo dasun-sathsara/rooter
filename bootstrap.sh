@@ -138,7 +138,7 @@ for id in "${MODULE_IDS[@]}"; do
   log "Running ${MODULE_LABELS[$id]}"
   source "$file"
   if ! module_run; then
-    die "Module failed: $id"
+    warn "Module failed: $id"
   fi
   ok "Finished ${MODULE_LABELS[$id]}"
 done

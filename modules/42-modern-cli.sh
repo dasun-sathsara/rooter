@@ -49,7 +49,7 @@ module_run() {
   install_latest_deb() {
     local repo=$1 pattern=$2 name=$3 url tmp_deb
     url=$(github_asset_url "$repo" "$pattern")
-    [[ -n $url ]] || die "Could not find latest $name release asset."
+    [[ -n $url ]] || { warn "Could not find latest $name release asset."; return 1; }
     tmp_deb=$(mktemp)
     curl -fsSL "$url" -o "$tmp_deb"
     apt_install "$tmp_deb"
@@ -71,7 +71,7 @@ module_run() {
     local target url tmp_dir zoxide_bin
     target=$(rust_target_arch)
     url=$(github_asset_url "ajeetdsouza/zoxide" "^zoxide-[0-9.]+-$target\\.tar\\.gz$")
-    [[ -n $url ]] || die "Could not find latest zoxide release asset."
+    [[ -n $url ]] || { warn "Could not find latest zoxide release asset."; return 1; }
     tmp_dir=$(mktemp -d)
     curl -fsSL "$url" | tar -xz -C "$tmp_dir"
     zoxide_bin=$(find "$tmp_dir" -type f -name zoxide -perm -111 -print -quit)
@@ -96,7 +96,7 @@ module_run() {
       *) die "Unsupported btop architecture: $(dpkg --print-architecture)" ;;
     esac
     url=$(github_asset_url "aristocratos/btop" "^btop-$arch-unknown-linux-musl\\.tbz$")
-    [[ -n $url ]] || die "Could not find latest btop release asset."
+    [[ -n $url ]] || { warn "Could not find latest btop release asset."; return 1; }
     tmp_dir=$(mktemp -d)
     curl -fsSL "$url" | tar -xj -C "$tmp_dir"
     make -C "$tmp_dir/btop" install PREFIX=/usr/local
@@ -119,10 +119,10 @@ module_run() {
     install_latest_deb "muesli/duf" "^duf_[0-9.]+_linux_${arch}\\.deb$" "duf"
   }
 
-  install_bat
-  install_eza
-  install_zoxide
-  install_dua
-  install_btop
-  install_duf
+  install_bat || warn "Failed to install bat"
+  install_eza || warn "Failed to install eza"
+  install_zoxide || warn "Failed to install zoxide"
+  install_dua || warn "Failed to install dua"
+  install_btop || warn "Failed to install btop"
+  install_duf || warn "Failed to install duf"
 }
