@@ -9,6 +9,14 @@ module_run() {
   set -Eeuo pipefail
 
   install_ppa() {
+    local codename
+    . /etc/os-release
+    codename=${VERSION_CODENAME:-$UBUNTU_CODENAME}
+    [[ -n $codename ]] || { warn "Could not determine Ubuntu codename."; return 1; }
+    # Check if the PPA has a Release file for this codename before adding it
+    if ! curl -fsIL "https://ppa.launchpadcontent.net/neovim-ppa/stable/ubuntu/dists/${codename}/Release" >/dev/null 2>&1; then
+      return 1
+    fi
     apt_install software-properties-common
     add-apt-repository -y ppa:neovim-ppa/stable
     apt-get update
